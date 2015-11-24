@@ -8,6 +8,8 @@ var turno = Constants.JUGADORX;
 
 var valoresTablero = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']];
 
+var movimientos = 0;
+
 
 var TresEnRayaStore = Object.assign({}, EventEmitter.prototype, {
 	getTurno: function () {
@@ -15,6 +17,9 @@ var TresEnRayaStore = Object.assign({}, EventEmitter.prototype, {
 	},
 	getValores: function () {
 		return valoresTablero;
+	},
+	getMovimientos: function () {
+		return movimientos;
 	},
 	addChangeListener(callback) {
 		this.on(Constants.CHANGE_EVENT, callback);
@@ -33,6 +38,7 @@ TresEnRayaDispatcher.register(function (payload) {
 			let nuevoValor = turno === Constants.JUGADORX ? 'X' : '0';
 			turno = turno === Constants.JUGADORX ? Constants.JUGADOR0 : Constants.JUGADORX;
 			valoresTablero[payload.x][payload.y] = nuevoValor;
+			movimientos = movimientos + 1;
 			TresEnRayaStore.emitChange();
 			break;
 		}
