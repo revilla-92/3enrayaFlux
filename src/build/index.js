@@ -306,8 +306,14 @@ var Constants = require('../constants/TresEnRayaConstants');
 module.exports = {
 	jugarPosicion: function jugarPosicion(x, y) {
 		TresEnRayaDispatcher.dispatch({
-			type: Constants.ActionTypes.JUGAR_POSICION, x: x,
+			type: Constants.ActionTypes.JUGAR_POSICION,
+			x: x,
 			y: y
+		});
+	},
+	reiniciar: function reiniciar() {
+		TresEnRayaDispatcher.dispatch({
+			type: Constants.ActionTypes.REINICIAR
 		});
 	}
 };
@@ -318,13 +324,16 @@ module.exports = {
 var Tablero = require('./Tablero.jsx');
 var Cabecera = require('./Cabecera.jsx');
 
+var TresEnRayaActions = require('../actions/TresEnRayaActions');
 var TresEnRayaStore = require('../stores/TresEnRayaStores');
 
 function getAppStateFromStore() {
 	return {
 		turno: TresEnRayaStore.getTurno(),
 		valores: TresEnRayaStore.getValores(),
-		movimientos: TresEnRayaStore.getMovimientos()
+		movimientos: TresEnRayaStore.getMovimientos(),
+		jugadorGanadorX: TresEnRayaStore.getGanadorJugadorX(),
+		jugadorGanadorY: TresEnRayaStore.getGanadorJugadorY()
 	};
 }
 
@@ -343,8 +352,20 @@ var App = React.createClass({
 	_onChange: function _onChange() {
 		this.setState(getAppStateFromStore());
 	},
+	_onClickButtonReinicio: function _onClickButtonReinicio() {
+		TresEnRayaActions.reiniciar();
+	},
 	render: function render() {
+
+		if (this.state.jugadorGanadorX) {
+			alert("Ha ganado el jugador X");
+		}
+		if (this.state.jugadorGanadorY) {
+			alert("Ha ganado el jugador O");
+		}
+
 		var texto = "Turno del " + this.state.turno;
+
 		return React.createElement(
 			'div',
 			null,
@@ -355,6 +376,11 @@ var App = React.createClass({
 				null,
 				' Movimientos: ',
 				this.state.movimientos
+			),
+			React.createElement(
+				'button',
+				{ onClick: this._onClickButtonReinicio },
+				' Reiniciar Partida. '
 			)
 		);
 	}
@@ -362,7 +388,7 @@ var App = React.createClass({
 
 module.exports = App;
 
-},{"../stores/TresEnRayaStores":12,"./Cabecera.jsx":6,"./Tablero.jsx":8}],6:[function(require,module,exports){
+},{"../actions/TresEnRayaActions":4,"../stores/TresEnRayaStores":12,"./Cabecera.jsx":6,"./Tablero.jsx":8}],6:[function(require,module,exports){
 "use strict";
 
 var Cabecera = React.createClass({
@@ -443,7 +469,8 @@ module.exports = Tablero;
 
 module.exports = {
 	ActionTypes: {
-		JUGAR_POSICION: "JUGAR_POSICION"
+		JUGAR_POSICION: "JUGAR_POSICION",
+		REINICIAR: "REINICIAR"
 	},
 	CHANGE_EVENT: 'change',
 	JUGADORX: "jugador 1 - las X",
@@ -470,14 +497,100 @@ ReactDOM.render(React.createElement(App, null), document.getElementById('contene
 var EventEmitter = require('events').EventEmitter;
 
 var TresEnRayaDispatcher = require('../dispatchers/TresEnRayaDispatcher');
-
 var Constants = require('../constants/TresEnRayaConstants');
 
-var turno = Constants.JUGADORX;
-
 var valoresTablero = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']];
-
+var turno = Constants.JUGADORX;
+var jugadorGanadorX = false;
+var jugadorGanadorY = false;
 var movimientos = 0;
+
+var turnoInicial = Constants.JUGADORX;
+var jugadorGanadorXInicial = false;
+var jugadorGanadorYInicial = false;
+var movimientosInicial = 0;
+
+function compruebaGanadorJugadorX(valores) {
+
+	// Comprobaciones para filas y columnas.
+	for (var a = 0; a < 3; a++) {
+
+		// Contadores para coincidencias en fila de 3.
+		var n1X = 0;
+		var n2X = 0;
+		var n3X = 0;
+		var n4X = 0;
+
+		// Bucle secundario para comprobar las filas y columnas.
+		for (var b = 0; b < 3; b++) {
+
+			// Comprobamos filas para el valor X
+			if (valores[a][b] === 'X') {
+				n1X++;
+			}
+			// Comprobamos columnas para el valor X
+			if (valores[b][a] === 'X') {
+				n2X++;
+			}
+
+			// Comprobamos la diagonal principal.
+			if (valores[b][b] === 'X') {
+				n3X++;
+			}
+
+			// Comprobamos la diagonal inversa.
+			if (valores[b][2 - b] === 'X') {
+				n4X++;
+			}
+
+			// Si alguno de los contadores ha llegado a 3 coincidencias con X es que ha hecho 3 en raya y finaliza el juego.
+			if (n1X === 3 || n2X === 3 || n3X === 3 || n4X === 3) {
+				return true;
+			}
+		}
+	}
+};
+
+function compruebaGanadorJugadorY(valores) {
+
+	// Comprobaciones para filas y columnas.
+	for (var a = 0; a < 3; a++) {
+
+		// Contadores para coincidencias en fila de 3.
+		var n10 = 0;
+		var n20 = 0;
+		var n30 = 0;
+		var n40 = 0;
+
+		// Bucle secundario para comprobar las filas y columnas.
+		for (var b = 0; b < 3; b++) {
+
+			// Comprobamos filas para el valor X
+			if (valores[a][b] === '0') {
+				n10++;
+			}
+			// Comprobamos columnas para el valor X
+			if (valores[b][a] === '0') {
+				n20++;
+			}
+
+			// Comprobamos la diagonal principal.
+			if (valores[b][b] === '0') {
+				n30++;
+			}
+
+			// Comprobamos la diagonal inversa.
+			if (valores[b][2 - b] === '0') {
+				n40++;
+			}
+
+			// Si alguno de los contadores ha llegado a 3 coincidencias con X es que ha hecho 3 en raya y finaliza el juego.
+			if (n10 === 3 || n20 === 3 || n30 === 3 || n40 === 3) {
+				return true;
+			}
+		}
+	}
+};
 
 var TresEnRayaStore = Object.assign({}, EventEmitter.prototype, {
 	getTurno: function getTurno() {
@@ -488,6 +601,12 @@ var TresEnRayaStore = Object.assign({}, EventEmitter.prototype, {
 	},
 	getMovimientos: function getMovimientos() {
 		return movimientos;
+	},
+	getGanadorJugadorX: function getGanadorJugadorX() {
+		return jugadorGanadorX;
+	},
+	getGanadorJugadorY: function getGanadorJugadorY() {
+		return jugadorGanadorY;
 	},
 	addChangeListener: function addChangeListener(callback) {
 		this.on(Constants.CHANGE_EVENT, callback);
@@ -507,8 +626,24 @@ TresEnRayaDispatcher.register(function (payload) {
 			turno = turno === Constants.JUGADORX ? Constants.JUGADOR0 : Constants.JUGADORX;
 			valoresTablero[payload.x][payload.y] = nuevoValor;
 			movimientos = movimientos + 1;
+
+			jugadorGanadorX = compruebaGanadorJugadorX(valoresTablero);
+			jugadorGanadorY = compruebaGanadorJugadorY(valoresTablero);
+
 			TresEnRayaStore.emitChange();
 			break;
+
+		case Constants.ActionTypes.REINICIAR:
+
+			jugadorGanadorX = jugadorGanadorXInicial;
+			jugadorGanadorY = jugadorGanadorYInicial;
+			valoresTablero = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']];
+			movimientos = movimientosInicial;
+			turno = turnoInicial;
+
+			TresEnRayaStore.emitChange();
+			break;
+
 	}
 });
 
