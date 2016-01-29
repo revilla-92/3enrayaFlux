@@ -98,8 +98,6 @@ function compruebaGanadorJugadorY(valores){
 	}
 };
 
-
-
 var TresEnRayaStore = Object.assign({}, EventEmitter.prototype, {
 	getTurno: function () {
 		return turno;

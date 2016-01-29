@@ -7,7 +7,7 @@ module.exports = {
 		TresEnRayaDispatcher.dispatch({
 			type : Constants.ActionTypes.JUGAR_POSICION, 
 			x :x,
-			y:y
+			y :y
 		});
 	},
 	reiniciar: function(){
