@@ -1,7 +1,37 @@
+body{
+	background: url(../images/bg.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	background-opacity: 0.5;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+}
+
+h1{
+	margin-top: 25px;
+}
+
 .clickable {
-		cursor: pointer;
+	cursor: pointer;
 }
 
 .no_clickable {
-		cursor: not-allowed;
+	cursor: not-allowed;
+}
+
+.cabecera{
+	margin-top: 4%;
+	margin-bottom: 1.5%;
+}
+
+#reset{
+	margin-top: 1.5%;
+	padding: 5px;
+}
+
+#movimientos{
+	margin-top: 20px;
+	margin-bottom: 20px;
 }

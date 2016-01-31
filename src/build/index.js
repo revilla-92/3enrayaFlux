@@ -363,6 +363,9 @@ var App = React.createClass({
 		if (this.state.jugadorGanadorY) {
 			alert("Ha ganado el jugador O");
 		}
+		if (this.state.movimientos === 9) {
+			alert("Ha acabado el juego, pulsa el boton para reiniciar");
+		}
 
 		var texto = "Turno del " + this.state.turno;
 
@@ -373,7 +376,7 @@ var App = React.createClass({
 			React.createElement(Tablero, { valores: this.state.valores }),
 			React.createElement(
 				'div',
-				null,
+				{ id: 'movimientos' },
 				' Movimientos: ',
 				this.state.movimientos
 			),

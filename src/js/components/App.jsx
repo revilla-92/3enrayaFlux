@@ -48,7 +48,7 @@ var App = React.createClass({
 			<div>
 				<Cabecera texto={texto}/>
 				<Tablero valores={this.state.valores}/>
-				<div> Movimientos: {this.state.movimientos}</div>
+				<div id="movimientos"> Movimientos: {this.state.movimientos}</div>
 				<button onClick={this._onClickButtonReinicio}> Reiniciar Partida. </button>
 			</div>
 		)
